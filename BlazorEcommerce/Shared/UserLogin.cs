@@ -13,5 +13,11 @@ namespace BlazorEcommerce.Shared
         public string Email { get; set; } = string.Empty;
         [Required]
         public string Password { get; set; } = string.Empty;
+
+        public UserLogin(string email, string password)
+        {
+            Email = email;
+            Password = password;
+        }
     }
 }

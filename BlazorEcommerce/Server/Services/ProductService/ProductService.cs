@@ -60,9 +60,8 @@
         {
             var response = new ServiceResponse<List<Product>>
             {
-                Data = await _context.Products
-                    .Where(p => p.Featured && p.Visible && !p.Deleted)
-                    .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
+                Data = await _context.Products                   
+                    .Include(p => p.Variants)
                     .Include(p => p.Images)
                     .ToListAsync()
             };

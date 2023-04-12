@@ -149,5 +149,23 @@ namespace BlazorEcommerce.Server.Services.AuthService
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
         }
+
+        public async Task<ServiceResponse<string>> GetCurrentUserEmailAsync()
+        {
+            if (await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(GetUserEmail())) is User user)
+            {
+                return new ServiceResponse<string>
+                {
+                    Data = user.Email
+                };
+            } else
+            {
+                return new ServiceResponse<string>
+                {
+                    Success = false,
+                    Message = "No user is signed in."
+                };
+            }
+        }
     }
 }

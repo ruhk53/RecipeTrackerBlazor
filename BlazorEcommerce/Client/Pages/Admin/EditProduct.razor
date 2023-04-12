@@ -38,21 +38,7 @@ else
             }
             else
             {
-                foreach (var image in product.Images)
-                {
-                    <MudCard Class="ma-2">
-                        <MudCardContent>
-                            <MudImage Src="@image.Data" />
-                        </MudCardContent>
-                        <MudCardActions Style="justify-content: center;">
-                            <MudButton Variant="Variant.Filled"
-                           Color="Color.Error"
-                           OnClick="@(() => RemoveImage(image.Id))">
-                                Remove
-                            </MudButton>
-                        </MudCardActions>
-                    </MudCard>
-                }
+                
             }
         </div>
         <div class="mb-0">

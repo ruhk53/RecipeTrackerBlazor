@@ -1,4 +1,6 @@
-﻿namespace BlazorEcommerce.Client.Services.AuthService
+﻿using System.Security.Claims;
+
+namespace BlazorEcommerce.Client.Services.AuthService
 {
     public class AuthService : IAuthService
     {
@@ -20,6 +22,21 @@
         public async Task<bool> IsUserAuthenticated()
         {
             return (await _authStateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated;
+        }
+
+        public async Task<ServiceResponse<string>> GetUserEmail()
+        {
+            if (await IsUserAuthenticated() == false)
+                return new ServiceResponse<string>
+                {
+                    Success = false,
+                    Message = "No authenticated user."
+                };
+            var result = await _http.GetFromJsonAsync<ServiceResponse<string>>("api/auth/get-current-email");
+            return new ServiceResponse<string>
+            {
+                Data = result.Data
+            };
         }
 
         public async Task<ServiceResponse<string>> Login(UserLogin request)

@@ -59,5 +59,18 @@ namespace BlazorEcommerce.Server.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("get-current-email"), Authorize]
+        public async Task<ActionResult<ServiceResponse<string>>> GetCurrentEmailAsync()
+        {
+            var response = await _authService.GetCurrentUserEmailAsync();
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
     }
 }

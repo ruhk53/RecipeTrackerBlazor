@@ -1,18 +1,72 @@
 ﻿@page "/"
 @page "/search/{searchText}/{page:int}"
 @page "/{categoryUrl}"
+@using Microsoft.AspNetCore.WebUtilities
 @inject IProductService ProductService
+@inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
 
-<PageTitle>My Shop</PageTitle>
 
-@if (SearchText == null && CategoryUrl == null)
-{
-    <FeaturedProducts />
-}
-else
-{
-    <ProductList />
-}
+<AuthorizeView>
+    <Authorized>
+        @if (loading)
+        {
+            <RadzenRow AlignItems="Radzen.AlignItems.Center" JustifyContent="Radzen.JustifyContent.Center" style="height: 800px;" Gap="1rem">
+
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+
+            </RadzenRow>
+        } else {
+            <RadzenPanel AllowCollapse="true" Class="rz-my-10 rz-mx-auto" Style="width: 900px; "
+                Expand=@(() => Change("Panel expanded")) Collapse=@(() => Change("Panel collapsed")) >
+            <HeaderTemplate>
+                <RadzenText TextStyle="TextStyle.H6" Class="rz-display-flex rz-align-items-center rz-m-0">
+                    <RadzenIcon Icon="account_box" class="rz-mr-1" /><b>Products</b>
+                </RadzenText>
+            </HeaderTemplate>
+            <ChildContent>
+                <RadzenCard  class="rz-mt-4">
+                    <RadzenDataList PageSize="9" WrapItems="true" AllowPaging="true" 
+                                    Data="@ProductService.Products" TItem="Product">
+                        <Template Context="product">
+                            <RadzenCard Style="width: 250px">
+                                <RadzenRow>
+                                    <RadzenColumn Size="8" class="rz-text-truncate">
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Light" Text=@($"{product.Category}") class="me-1" />
+                                        <b>@(product.Description.Substring(0, 30))</b>
+                                    </RadzenColumn>
+                                    <RadzenColumn Size="4" class="rz-text-align-end">
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Success" Text=@($"{String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", product.Variants[0].Price)}") />
+                                    </RadzenColumn>
+                                </RadzenRow>
+                                <hr style="border: none; background-color: var(--rz-text-disabled-color); height: 1px; margin: 1rem 0;" />
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="1rem">
+                                    <RadzenImage Path="@product.ImageUrl" Style="width: 80px; height: 80px; border-radius: 50%" />
+                                    <RadzenStack Gap="0">
+                                        <RadzenText TextStyle="TextStyle.H6" Class="rz-mb-0">@(product.Title)</RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1">@product.Category</RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body2">@product.Description.Substring(0, 30))</RadzenText>
+                                    </RadzenStack>
+                                </RadzenStack>
+                            </RadzenCard>
+                        </Template>
+                    </RadzenDataList>
+                </RadzenCard>
+            </ChildContent>
+            <SummaryTemplate>
+                <RadzenCard class="rz-mt-4">
+                    <b>@ProductService.Products.Count() Products</b>
+                </RadzenCard>
+            </SummaryTemplate>
+        </RadzenPanel>
+        }
+    </Authorized>
+    <NotAuthorized>
+        @{
+            RedirectToLogin();
+        }
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     [Parameter]
@@ -24,6 +78,8 @@ else
     [Parameter]
     public int Page { get; set; } = 1;
 
+    bool loading = true;
+
     protected override async Task OnParametersSetAsync()
     {
         if (SearchText != null)
@@ -34,5 +90,20 @@ else
         {
             await ProductService.GetProducts(CategoryUrl);
         }
+        loading = false;
+    }
+
+    private async void RedirectToLogin()
+    {
+        var uri = Navigation.ToBaseRelativePath(Navigation.Uri);
+        await LocalStorage.SetItemAsync("previousUrl", uri);
+        
+        // Redirect the user to the login page
+        Navigation.NavigateTo("/login");
+    }
+
+    void Change(string text)
+    {
+        
     }
 }

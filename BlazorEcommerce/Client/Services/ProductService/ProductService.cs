@@ -62,7 +62,7 @@
             if (Products.Count == 0)
                 Message = "No products found";
 
-            ProductsChanged.Invoke();
+            ProductsChanged?.Invoke();
         }
 
         public async Task<List<string>> GetProductSearchSuggestions(string searchText)

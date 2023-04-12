@@ -1,24 +1,28 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <main>
-        <div class="top-row px-2">
-            <HomeButton />
-            <Search />
-            <UserButton />
-            <CartCounter />
-        </div>
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenRow>
+            <RadzenColumn Size=8>
+                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.End" JustifyContent="Radzen.JustifyContent.Start">
+                    <RecipeNavMenu />
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn Size=4>
+                <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End">
+                    <UserButton />
+                </RadzenStack>
+                
+            </RadzenColumn>
+        </RadzenRow>
 
-        <div class="nav-menu">
-            <ShopNavMenu />
-        </div>
-
-        <article class="content px-2">
+    </RadzenHeader>
+    <RadzenBody>
+        <div class="rz-p-4">
             @Body
-        </article>
-    </main>
-</div>
-
-<MudThemeProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+        </div>
+    </RadzenBody>
+    <RadzenFooter>
+        Footer
+    </RadzenFooter>
+</RadzenLayout>

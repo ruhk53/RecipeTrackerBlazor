@@ -1,0 +1,25 @@
+﻿<div style="padding-top:10px;">
+        <RadzenMenu Click="OnParentClicked">
+            <RadzenMenuItem Text="Home" Icon="home" Path="">
+            </RadzenMenuItem>
+            <RadzenMenuItem Text="Products" Icon="payment">
+                <RadzenMenuItem Text="Books" Path="books" Icon="check_circle"></RadzenMenuItem>
+                <RadzenMenuItem Text="Movies" Path="movies" Icon="input"></RadzenMenuItem>
+                <RadzenMenuItem Text="Games" Path="video-games" Icon="description"></RadzenMenuItem>
+            </RadzenMenuItem>
+    </RadzenMenu>
+</div>
+
+@code {
+
+    void OnParentClicked(MenuItemEventArgs args)
+    {
+        
+    }
+
+    void OnChildClicked(MenuItemEventArgs args)
+    {
+        
+    }
+
+}

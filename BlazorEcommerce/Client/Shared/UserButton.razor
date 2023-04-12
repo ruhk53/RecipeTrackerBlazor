@@ -1,52 +1,56 @@
 ﻿@inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAuthService AuthService
 @inject NavigationManager NavigationManager
-@inject ICartService CartService
 
-<div class="dropdown">
-    <button @onclick="ToggleUserMenu"
-            @onfocusout="HideUserMenu"
-            class="btn btn-secondary dropdown-toggle user-button">
-        <i class="oi oi-person"></i>
-    </button>
-    <div class="dropdown-menu dropdown-menu-right @UserMenuCssClass">
-        <AuthorizeView>
-            <Authorized>
-                <a href="profile" class="dropdown-item">Profile</a>
-                <a href="orders" class="dropdown-item">Orders</a>
-                <hr />
-                <AdminMenu />
-                <button class="dropdown-item" @onclick="Logout">Logout</button>
-            </Authorized>
-            <NotAuthorized>
-                <a href="login?returnUrl=@NavigationManager.ToBaseRelativePath(NavigationManager.Uri)" class="dropdown-item">Login</a>
-                <a href="register" class="dropdown-item">Register</a>
-            </NotAuthorized>
-        </AuthorizeView>
-    </div>
-</div>
+<AuthorizeView>
+    <Authorized>
+        <div class="rz-text-align-center">
+            <RadzenProfileMenu Click="@(args => OnClick(args))">
+                <Template>
+                    <RadzenGravatar Email="@email">
+                    </RadzenGravatar>
+                </Template>
+                <ChildContent>
+                    <RadzenProfileMenuItem Text="Logout" Icon="account_circle"></RadzenProfileMenuItem>
+                </ChildContent>
+            </RadzenProfileMenu>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="rz-text-align-center">
+            <RadzenProfileMenu Click="@(args => OnClick(args))">
+                <Template>
+                    <RadzenGravatar Email="default@user.com">
+                    </RadzenGravatar>
+                </Template>
+                <ChildContent>
+                    <RadzenProfileMenuItem Text="Login" Icon="account_circle"></RadzenProfileMenuItem>
+                </ChildContent>
+            </RadzenProfileMenu>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private bool showUserMenu = false;
+    string email = string.Empty;
 
-    private string UserMenuCssClass => showUserMenu ? "show-menu" : null;
-
-    private void ToggleUserMenu()
+    protected override async Task OnInitializedAsync()
     {
-        showUserMenu = !showUserMenu;
+        var result = await AuthService.GetUserEmail();
+        email = result.Success ? result.Data : "default@web.com";
     }
 
-    private async Task HideUserMenu()
+    private async Task OnClick(RadzenProfileMenuItem e)
     {
-        await Task.Delay(200);
-        showUserMenu = false;
-    }
-
-    private async Task Logout()
-    {
-        await LocalStorage.RemoveItemAsync("authToken");
-        await CartService.GetCartItemsCount();
-        await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        NavigationManager.NavigateTo("");
+        if (e.Text == "Logout")
+        {
+            await LocalStorage.RemoveItemAsync("authToken");
+            await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            NavigationManager.NavigateTo("");
+        } else if (e.Text == "Login")
+        {
+            NavigationManager.NavigateTo("login");
+        }
     }
 }
